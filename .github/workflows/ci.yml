@@ -1,34 +1,31 @@
 name: CI
+
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        compiler: [gcc, clang]
     
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive' # Очень важно! Подтягивает submodule с GTest
     
     - name: Install CMake
       run: sudo apt-get update && sudo apt-get install -y cmake
       
-    - name: Configure CMake
-      run: cmake -H. -B_build -DCMAKE_INSTALL_PREFIX=_install
+    - name: Configure CMake with tests
+      run: cmake -H. -B_build -DBUILD_TESTS=ON
       
     - name: Build
       run: cmake --build _build
       
-    - name: Install
-      run: cmake --build _build --target install
+    - name: Run tests (via CTest)
+      run: cmake --build _build --target test -- ARGS=--verbose
       
-    - name: Run example1
-      run: ./_build/example1
-      
-    - name: Run example2
-      run: ./_build/example2
+    - name: Run test binary directly
+      run: ./_build/check

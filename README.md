@@ -1,19 +1,20 @@
-[![CI](https://github.com/KRisti0w/lab04/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab04/actions/workflows/ci.yml)
-## Отчёт к lab04
+[![CI](https://github.com/KRisti0w/lab05/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab05/actions/workflows/ci.yml)
+[![CI](https://github.com/KRisti0w/lab05/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab05/actions/workflows/ci.yml)
+## Отчёт к lab05
 В рамках выполнения данной лабораторной работы вместо Travis CI, мною был использован Github actions, все команды из tutorial были адаптированы под него
 1) Скопирован репозиторий из lab03:
 ```bash
-$ git clone https://github.com/${GITHUB_USERNAME}/lab03 projects/lab04
-Клонирование в «projects/lab04»...
+$ git clone https://github.com/${GITHUB_USERNAME}/lab03 projects/lab05
+Клонирование в «projects/lab05»...
 remote: Enumerating objects: 31, done.
 remote: Counting objects: 100% (31/31), done.
 remote: Compressing objects: 100% (21/21), done.
 Получение объектов: 100% (31/31), 8.29 КиБ | 652.00 КиБ/с, готово.
 Определение изменений: 100% (6/6), готово.
 remote: Total 31 (delta 6), reused 27 (delta 5), pack-reused 0 (from 0)
-$ cd projects/lab04
+$ cd projects/lab05
 $ git remote remove origin
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab04.git
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab05.git
 ```
 2) Создан конфигурационный файл ci.yml:
 ```bash
