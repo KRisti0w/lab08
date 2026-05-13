@@ -1,24 +1,24 @@
-[![CI](https://github.com/KRisti0w/lab05/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab05/actions/workflows/ci.yml)
-## Отчёт к lab05
+[![CI](https://github.com/KRisti0w/lab06/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab06/actions/workflows/ci.yml)
+## Отчёт к lab06
 В рамках выполнения данной лабораторной работы мною были выполнены команды из tutorial с некоторыми изменениями:
 1) Скопирован репозиторий из lab04:
 ```bash
-$ git clone https://github.com/${GITHUB_USERNAME}/lab04 projects/lab05
-Клонирование в «projects/lab05»...
+$ git clone https://github.com/${GITHUB_USERNAME}/lab04 projects/lab06
+Клонирование в «projects/lab06»...
 remote: Enumerating objects: 46, done.
 remote: Counting objects: 100% (46/46), done.
 remote: Compressing objects: 100% (31/31), done.
 remote: Total 46 (delta 12), reused 38 (delta 8), pack-reused 0 (from 0)
 Получение объектов: 100% (46/46), 12.03 КиБ | 684.00 КиБ/с, готово.
 Определение изменений: 100% (12/12), готово.
-$ cd projects/lab05
+$ cd projects/lab06
 $ git remote remove origin
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab05
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab06
 ```
 2) Установлен и закоммичен gtest более актуальной версии, чем предложено в tutorial:
 ```bash
 $ git submodule add https://github.com/google/googletest third-party/gtest
-Клонирование в «/home/kristina/KRisti0w/workspace/projects/lab05/third-party/gtest»...
+Клонирование в «/home/kristina/KRisti0w/workspace/projects/lab06/third-party/gtest»...
 remote: Enumerating objects: 28627, done.
 remote: Counting objects: 100% (64/64), done.
 remote: Compressing objects: 100% (48/48), done.
@@ -97,7 +97,7 @@ CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
 -- Found Threads: TRUE
 -- Configuring done (2.6s)
 -- Generating done (0.0s)
--- Build files have been written to: /home/danila/Wartheree/workspace/projects/lab05/_build
+-- Build files have been written to: /home/danila/Wartheree/workspace/projects/lab06/_build
 ```
 ```bash
 $ cmake --build _build
@@ -123,7 +123,7 @@ $ cmake --build _build
 ```bash
 $ cmake --build _build --target test
 Running tests...
-Test project /home/danila/Wartheree/workspace/projects/lab05/_build
+Test project /home/danila/Wartheree/workspace/projects/lab06/_build
     Start 1: check
 1/1 Test #1: check ............................   Passed    0.01 sec
 
@@ -133,7 +133,7 @@ Total Test time (real) =   0.03 sec
 ```
 ```bash
 $ _build/check
-Running main() from /home/danila/Wartheree/workspace/projects/lab05/third-party/gtest/googletest/src/gtest_main.cc
+Running main() from /home/danila/Wartheree/workspace/projects/lab06/third-party/gtest/googletest/src/gtest_main.cc
 [==========] Running 1 test from 1 test suite.
 [----------] Global test environment set-up.
 [----------] 1 test from Print
@@ -148,9 +148,9 @@ Running main() from /home/danila/Wartheree/workspace/projects/lab05/third-party/
 ```bash
 $ cmake --build _build --target test -- ARGS=--verbose
 Running tests...
-UpdateCTestConfiguration  from :/home/danila/Wartheree/workspace/projects/lab05/_build/DartConfiguration.tcl
-UpdateCTestConfiguration  from :/home/danila/Wartheree/workspace/projects/lab05/_build/DartConfiguration.tcl
-Test project /home/danila/Wartheree/workspace/projects/lab05/_build
+UpdateCTestConfiguration  from :/home/danila/Wartheree/workspace/projects/lab06/_build/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/home/danila/Wartheree/workspace/projects/lab06/_build/DartConfiguration.tcl
+Test project /home/danila/Wartheree/workspace/projects/lab06/_build
 Constructing a list of tests
 Done constructing a list of tests
 Updating test list for fixtures
@@ -160,10 +160,10 @@ Checking test dependency graph end
 test 1
     Start 1: check
 
-1: Test command: /home/danila/Wartheree/workspace/projects/lab05/_build/check
-1: Working Directory: /home/danila/Wartheree/workspace/projects/lab05/_build
+1: Test command: /home/danila/Wartheree/workspace/projects/lab06/_build/check
+1: Working Directory: /home/danila/Wartheree/workspace/projects/lab06/_build
 1: Test timeout computed to be: 10000000
-1: Running main() from /home/danila/Wartheree/workspace/projects/lab05/third-party/gtest/googletest/src/gtest_main.cc
+1: Running main() from /home/danila/Wartheree/workspace/projects/lab06/third-party/gtest/googletest/src/gtest_main.cc
 1: [==========] Running 1 test from 1 test suite.
 1: [----------] Global test environment set-up.
 1: [----------] 1 test from Print
@@ -220,3 +220,5 @@ jobs:
 ```
 7) Все изменения закоммичены и запушены.
 8) Репозиторий прошёл все тесты (бейдж об этом в начале отчёта).
+
+[![Packaging](https://github.com/KRisti0w/lab06/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab06/actions/workflows/ci.yml)
