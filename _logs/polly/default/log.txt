@@ -1,0 +1,76 @@
+Execute command: [
+  `which`
+  `cmake`
+]
+[/home/kristina/KRisti0w/workspace/projects/lab07]> "which" "cmake"
+/usr/bin/cmake
+Execute command: [
+  `cmake`
+  `--version`
+]
+[/home/kristina/KRisti0w/workspace/projects/lab07]> "cmake" "--version"
+cmake version 3.31.6
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+Execute command: [
+  `cmake`
+  `-H.`
+  `-B/home/kristina/KRisti0w/workspace/projects/lab07/_builds/default`
+  `-DCMAKE_TOOLCHAIN_FILE=/home/kristina/KRisti0w/workspace/projects/lab07/tools/polly/default.cmake`
+]
+[/home/kristina/KRisti0w/workspace/projects/lab07]> "cmake" "-H." "-B/home/kristina/KRisti0w/workspace/projects/lab07/_builds/default" "-DCMAKE_TOOLCHAIN_FILE=/home/kristina/KRisti0w/workspace/projects/lab07/tools/polly/default.cmake"
+-- [polly] Used toolchain: Default
+-- The C compiler identification is GNU 14.2.0
+-- The CXX compiler identification is GNU 14.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Configuring done (8.6s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/kristina/KRisti0w/workspace/projects/lab07/_builds/default
+Execute command: [
+  `cmake`
+  `--build`
+  `/home/kristina/KRisti0w/workspace/projects/lab07/_builds/default`
+  `--`
+]
+[/home/kristina/KRisti0w/workspace/projects/lab07]> "cmake" "--build" "/home/kristina/KRisti0w/workspace/projects/lab07/_builds/default" "--"
+[  8%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
+[ 16%] Linking CXX static library libprint.a
+[ 16%] Built target print
+[ 25%] Building CXX object _deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[ 33%] Linking CXX static library ../../../lib/libgtest.a
+[ 33%] Built target gtest
+[ 41%] Building CXX object _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[ 50%] Linking CXX static library ../../../lib/libgtest_main.a
+[ 50%] Built target gtest_main
+[ 58%] Building CXX object CMakeFiles/check.dir/tests/test1.cpp.o
+[ 66%] Linking CXX executable check
+[ 66%] Built target check
+[ 75%] Building CXX object _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[ 83%] Linking CXX static library ../../../lib/libgmock.a
+[ 83%] Built target gmock
+[ 91%] Building CXX object _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[100%] Linking CXX static library ../../../lib/libgmock_main.a
+[100%] Built target gmock_main
+Execute command: [
+  `ctest`
+]
+[/home/kristina/KRisti0w/workspace/projects/lab07/_builds/default]> "ctest"
+Test project /home/kristina/KRisti0w/workspace/projects/lab07/_builds/default
+    Start 1: check
+1/1 Test #1: check ............................   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.02 sec
