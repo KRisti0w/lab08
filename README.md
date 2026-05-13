@@ -1,4 +1,4 @@
-[![CI](https://github.com/KRisti0w/lab06/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab06/actions/workflows/ci.yml)
+[![CI](https://github.com/KRisti0w/lab07/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab07/actions/workflows/ci.yml)
 ## Отчёт к lab06
 В рамках выполнения данной лабораторной работы мною были выполнены команды из tutorial с некоторыми изменениями:
 1) Скопирован репозиторий из lab05.
