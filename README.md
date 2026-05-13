@@ -1,85 +1,86 @@
 [![CI](https://github.com/KRisti0w/lab06/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab06/actions/workflows/ci.yml)
 ## Отчёт к lab06
 В рамках выполнения данной лабораторной работы мною были выполнены команды из tutorial с некоторыми изменениями:
-1) Скопирован репозиторий из lab04:
+1) Скопирован репозиторий из lab05.
+2) Изменён CMakeLists.txt:
 ```bash
-$ git clone https://github.com/${GITHUB_USERNAME}/lab04 projects/lab06
-Клонирование в «projects/lab06»...
-remote: Enumerating objects: 46, done.
-remote: Counting objects: 100% (46/46), done.
-remote: Compressing objects: 100% (31/31), done.
-remote: Total 46 (delta 12), reused 38 (delta 8), pack-reused 0 (from 0)
-Получение объектов: 100% (46/46), 12.03 КиБ | 684.00 КиБ/с, готово.
-Определение изменений: 100% (12/12), готово.
-$ cd projects/lab06
-$ git remote remove origin
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab06
+$ git diff
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5bdfc64..f29080c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,11 @@
+ cmake_minimum_required(VERSION 3.10)
+ project(print)
++set(PRINT_VERSION_MAJOR 0)
++set(PRINT_VERSION_MINOR 1)
++set(PRINT_VERSION_PATCH 0)
++set(PRINT_VERSION_TWEAK 0)
++set(PRINT_VERSION ${PRINT_VERSION_MAJOR}.${PRINT_VERSION_MINOR}.${PRINT_VERSION_PATCH}.${PRINT_VERSION_TWEAK})
++set(PRINT_VERSION_STRING "v${PRINT_VERSION}")
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error")
+
+ set(CMAKE_CXX_STANDARD 11)
+
 ```
-2) Установлен и закоммичен gtest более актуальной версии, чем предложено в tutorial:
+3) Добавлены файлы DESCRIPTION и ChangeLog.md
 ```bash
-$ git submodule add https://github.com/google/googletest third-party/gtest
-Клонирование в «/home/kristina/KRisti0w/workspace/projects/lab06/third-party/gtest»...
-remote: Enumerating objects: 28627, done.
-remote: Counting objects: 100% (64/64), done.
-remote: Compressing objects: 100% (48/48), done.
-remote: Total 28627 (delta 32), reused 16 (delta 16), pack-reused 28563 (from 2)
-Получение объектов: 100% (28627/28627), 13.78 МиБ | 8.76 МиБ/с, готово.
-Определение изменений: 100% (21268/21268), готово.
+$ cat DESCRIPTION
+Static C++ library for printing
 
-$ cd third-party/gtest && git checkout release-1.15.2 && cd ../..
-$ git add third-party/gtest
-$ git commit -m"added gtest framework v1.15.2"
-[main a01e205] added gtest framework v1.15.2
- 2 files changed, 4 insertions(+)
- create mode 100644 .gitmodules
- create mode 160000 third-party/gtest
+$ cat > ChangeLog.md <<EOF
+> * $(LANG=en_US date +'%a %b %d %Y') ${GITHUB_USERNAME} <${GITHUB_EMAIL}> 0.1.0.0
+- Initial RPM release
+> EOF
 ```
-
-3) К Cmake.txt добавлен фрагмент кода:
+4) Написан конфигурационный файл для CPack CPackConfig.cmake:
 ```cmake
-if(BUILD_TESTS)
-  enable_testing()
-  add_subdirectory(third-party/gtest)
-  file(GLOB \${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
-  add_executable(check \${\${PROJECT_NAME}_TEST_SOURCES})
-  target_link_libraries(check \${PROJECT_NAME} gtest_main)
-  add_test(NAME check COMMAND check)
-endif()
+include(InstallRequiredSystemLibraries)
+set(CPACK_PACKAGE_CONTACT danila.obidovskiy@gmail.com)
+set(CPACK_PACKAGE_VERSION_MAJOR ${PRINT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PRINT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PRINT_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION_TWEAK ${PRINT_VERSION_TWEAK})
+set(CPACK_PACKAGE_VERSION ${PRINT_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/DESCRIPTION)
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "static C++ library for printing")
+
+set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE)
+set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+
+set(CPACK_RPM_PACKAGE_NAME "print-devel")
+set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+set(CPACK_RPM_PACKAGE_GROUP "print")
+set(CPACK_RPM_CHANGELOG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChangeLog.md)
+set(CPACK_RPM_PACKAGE_RELEASE 1)
+
+set(CPACK_DEBIAN_PACKAGE_NAME "libprint-dev")
+set(CPACK_DEBIAN_PACKAGE_PREDEPENDS "cmake >= 3.0")
+set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
+
+include(CPack)
 ```
-4) Написан тест:
-```cpp
-#include <print.hpp>
-
-#include <gtest/gtest.h>
-
-TEST(Print, InFileStream)
-{
-  std::string filepath = "file.txt";
-  std::string text = "hello";
-  std::ofstream out{filepath};
-
-  print(text, out);
-  out.close();
-
-  std::string result;
-  std::ifstream in{filepath};
-  in >> result;
-
-  EXPECT_EQ(result, text);
-}
-```
-5) Произведена сборка и запущены тесты (с менее и более подробным выводом):
+5) Запушены все изменения и тег:
 ```bash
-$ cmake -H. -B_build -DBUILD_TESTS=ON
-CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
-  Compatibility with CMake < 3.10 will be removed from a future version of
-  CMake.
+Username for 'https://github.com': KRisti0w
+Password for 'https://KRisti0w@github.com':
+Перечисление объектов: 77, готово.
+Подсчет объектов: 100% (77/77), готово.
+При сжатии изменений используется до 2 потоков
+Сжатие объектов: 100% (42/42), готово.
+Запись объектов: 100% (77/77), 19.55 КиБ | 3.91 МиБ/с, готово.
+Total 77 (delta 25), reused 67 (delta 22), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (25/25), done.
+To https://github.com/KRisti0w/lab06.git
+ * [new branch]      main -> main
+ * [new tag]         v0.1.0.0 -> v0.1.0.0
+```
 
-  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
-  to tell CMake that the project requires at least <min> but has been updated
-  to work with policies introduced by <max> or earlier.
+6) Произведена ручная сборка (2мя способами)
 
-
+Первый способ:
+```bash
+$ cmake -H. -B_build
 -- The C compiler identification is GNU 14.2.0
 -- The CXX compiler identification is GNU 14.2.0
 -- Detecting C compiler ABI info
@@ -92,133 +93,41 @@ CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
 -- Check for working CXX compiler: /usr/bin/c++ - skipped
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
--- Performing Test CMAKE_HAVE_LIBC_PTHREAD
--- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
--- Found Threads: TRUE
--- Configuring done (2.6s)
+-- Examples will be built in /home/kristina/KRisti0w/workspace/projects/lab06/_build
+-- Configuring done (3.2s)
 -- Generating done (0.0s)
--- Build files have been written to: /home/danila/Wartheree/workspace/projects/lab06/_build
-```
-```bash
+-- Build files have been written to: /home/kristina/KRisti0w/workspace/projects/lab06/_build
+
 $ cmake --build _build
-[  8%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
-[ 16%] Linking CXX static library libprint.a
-[ 16%] Built target print
-[ 25%] Building CXX object third-party/gtest/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
-[ 33%] Linking CXX static library ../../../lib/libgtest.a
-[ 33%] Built target gtest
-[ 41%] Building CXX object third-party/gtest/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-[ 50%] Linking CXX static library ../../../lib/libgtest_main.a
-[ 50%] Built target gtest_main
-[ 58%] Building CXX object CMakeFiles/check.dir/tests/test1.cpp.o
-[ 66%] Linking CXX executable check
-[ 66%] Built target check
-[ 75%] Building CXX object third-party/gtest/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
-[ 83%] Linking CXX static library ../../../lib/libgmock.a
-[ 83%] Built target gmock
-[ 91%] Building CXX object third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
-[100%] Linking CXX static library ../../../lib/libgmock_main.a
-[100%] Built target gmock_main
+[ 16%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
+[ 33%] Linking CXX static library libprint.a
+[ 33%] Built target print
+[ 50%] Building CXX object CMakeFiles/example1.dir/examples/example1.cpp.o
+[ 66%] Linking CXX executable example1
+[ 66%] Built target example1
+[ 83%] Building CXX object CMakeFiles/example2.dir/examples/example2.cpp.o
+[100%] Linking CXX executable example2
+[100%] Built target example2
+
+$ cd _build
+$ cpack -G "TGZ"
+CPack: Create package using TGZ
+CPack: Install projects
+CPack: - Run preinstall target for: print
+CPack: - Install project: print []
+CPack: Create package
+CPack: - package: /home/kristina/KRisti0w/workspace/projects/lab06/_build/print-0.1.0.0-Linux.tar.gz generated.
 ```
+
+В результате выполнения сгенерирован архив print-0.1.0.0-Linux.tar.gz
+
+7) Этот архив помещен в локальную директорию artifacts:
 ```bash
-$ cmake --build _build --target test
-Running tests...
-Test project /home/danila/Wartheree/workspace/projects/lab06/_build
-    Start 1: check
-1/1 Test #1: check ............................   Passed    0.01 sec
+$ mkdir artifacts
+$ mv _build/*.tar.gz artifacts
+$ tree artifacts
+artifacts
+└── print-0.1.0.0-Linux.tar.gz
 
-100% tests passed, 0 tests failed out of 1
-
-Total Test time (real) =   0.03 sec
+1 directory, 1 file
 ```
-```bash
-$ _build/check
-Running main() from /home/danila/Wartheree/workspace/projects/lab06/third-party/gtest/googletest/src/gtest_main.cc
-[==========] Running 1 test from 1 test suite.
-[----------] Global test environment set-up.
-[----------] 1 test from Print
-[ RUN      ] Print.InFileStream
-[       OK ] Print.InFileStream (0 ms)
-[----------] 1 test from Print (0 ms total)
-
-[----------] Global test environment tear-down
-[==========] 1 test from 1 test suite ran. (0 ms total)
-[  PASSED  ] 1 test.
-```
-```bash
-$ cmake --build _build --target test -- ARGS=--verbose
-Running tests...
-UpdateCTestConfiguration  from :/home/danila/Wartheree/workspace/projects/lab06/_build/DartConfiguration.tcl
-UpdateCTestConfiguration  from :/home/danila/Wartheree/workspace/projects/lab06/_build/DartConfiguration.tcl
-Test project /home/danila/Wartheree/workspace/projects/lab06/_build
-Constructing a list of tests
-Done constructing a list of tests
-Updating test list for fixtures
-Added 0 tests to meet fixture requirements
-Checking test dependency graph...
-Checking test dependency graph end
-test 1
-    Start 1: check
-
-1: Test command: /home/danila/Wartheree/workspace/projects/lab06/_build/check
-1: Working Directory: /home/danila/Wartheree/workspace/projects/lab06/_build
-1: Test timeout computed to be: 10000000
-1: Running main() from /home/danila/Wartheree/workspace/projects/lab06/third-party/gtest/googletest/src/gtest_main.cc
-1: [==========] Running 1 test from 1 test suite.
-1: [----------] Global test environment set-up.
-1: [----------] 1 test from Print
-1: [ RUN      ] Print.InFileStream
-1: [       OK ] Print.InFileStream (1 ms)
-1: [----------] 1 test from Print (1 ms total)
-1:
-1: [----------] Global test environment tear-down
-1: [==========] 1 test from 1 test suite ran. (5 ms total)
-1: [  PASSED  ] 1 test.
-1/1 Test #1: check ............................   Passed    0.01 sec
-
-100% tests passed, 0 tests failed out of 1
-
-Total Test time (real) =   0.02 sec
-```
-6) В файл ci.yml дописана часть кода:
-```yml
-$ cat .github/workflows/ci.yml
-name: CMake CI
-
-on:
-  push:
-    branches: [ master, main ]
-  pull_request:
-    branches: [ master, main ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-
-    - name: Install CMake
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake cmake-data
-
-    - name: Configure CMake
-      run: cmake -H. -B_build -DCMAKE_INSTALL_PREFIX=_install -DBUILD_TESTS=ON
-
-    - name: Build
-      run: cmake --build _build
-
-    - name: Install
-      run: cmake --build _build --target install
-
-    - name: Run tests
-      run: cmake --build _build --target test -- ARGS=--verbose
-```
-7) Все изменения закоммичены и запушены.
-8) Репозиторий прошёл все тесты (бейдж об этом в начале отчёта).
-
-[![Packaging](https://github.com/KRisti0w/lab06/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab06/actions/workflows/ci.yml)
