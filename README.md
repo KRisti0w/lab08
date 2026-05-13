@@ -1,5 +1,4 @@
 [![CI](https://github.com/KRisti0w/lab07/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab07/actions/workflows/ci.yml)
-[![CMake CI](https://github.com/Wartheree/lab07/actions/workflows/ci.yml/badge.svg)](https://github.com/Wartheree/lab07/actions/workflows/ci.yml)
 ## Отчёт к lab07
 В рамках выполнения данной лабораторной работы мною были выполнены команды из tutorial с заменой устаревшего hunter на FetchContent:
 1) Скопирован репозиторий из lab06.
