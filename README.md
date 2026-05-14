@@ -1,5 +1,5 @@
-[![CI](https://github.com/KRisti0w/lab07/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab07/actions/workflows/ci.yml)
-## Отчёт к lab07
+[![CI](https://github.com/KRisti0w/lab08/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab08/actions/workflows/ci.yml)
+## Отчёт к lab08
 В рамках выполнения данной лабораторной работы мною были выполнены команды из tutorial с заменой устаревшего hunter на FetchContent:
 1) Скопирован репозиторий из lab06.
 2) В соответствие с tutorial были установлен hunter и изменён CMakeLists.txt, но в процессе сборки произошла ошибка, связанная с версией компилятора
@@ -60,7 +60,7 @@ index 57997ae..1ce0b56 100644
 4) Была произведена ручная сборка и запущен тест
 ```bash
 $ cmake -H. -B_builds -DBUILD_TESTS=ON
-kristina@debian:~/KRisti0w/workspace/projects/lab07$ cmake -H. -B_builds -DBUILD_TESTS=ON
+kristina@debian:~/KRisti0w/workspace/projects/lab08$ cmake -H. -B_builds -DBUILD_TESTS=ON
 -- The C compiler identification is GNU 14.2.0
 -- The CXX compiler identification is GNU 14.2.0
 -- Detecting C compiler ABI info
@@ -78,7 +78,7 @@ kristina@debian:~/KRisti0w/workspace/projects/lab07$ cmake -H. -B_builds -DBUILD
 -- Found Threads: TRUE
 -- Configuring done (4.0s)
 -- Generating done (0.0s)
--- Build files have been written to: /home/kristina/KRisti0w/workspace/projects/lab07/_builds
+-- Build files have been written to: /home/kristina/KRisti0w/workspace/projects/lab08/_builds
 
 $ cmake --build _builds
 [  8%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
@@ -102,7 +102,7 @@ $ cmake --build _builds
 
 $ cmake --build _builds --target test
 Running tests...
-Test project /home/kristina/KRisti0w/workspace/projects/lab07/_builds
+Test project /home/kristina/KRisti0w/workspace/projects/lab08/_builds
     Start 1: check
 1/1 Test #1: check ............................   Passed    0.01 sec
 
@@ -149,13 +149,13 @@ int main(int argc, char* argv[])
 7) Через polly был запущен тест
 ```bash
 Python version: 3.13
-Build dir: /home/kristina/KRisti0w/workspace/projects/lab07/_builds/default
+Build dir: /home/kristina/KRisti0w/workspace/projects/lab08/_builds/default
 Execute command: [
   `which`
   `cmake`
 ]
 
-[/home/kristina/KRisti0w/workspace/projects/lab07]> "which" "cmake"
+[/home/kristina/KRisti0w/workspace/projects/lab08]> "which" "cmake"
 
 /usr/bin/cmake
 Execute command: [
@@ -163,7 +163,7 @@ Execute command: [
   `--version`
 ]
 
-[/home/kristina/KRisti0w/workspace/projects/lab07]> "cmake" "--version"
+[/home/kristina/KRisti0w/workspace/projects/lab08]> "cmake" "--version"
 
 cmake version 3.31.6
 
@@ -171,11 +171,11 @@ CMake suite maintained and supported by Kitware (kitware.com/cmake).
 Execute command: [
   `cmake`
   `-H.`
-  `-B/home/kristina/KRisti0w/workspace/projects/lab07/_builds/default`
-  `-DCMAKE_TOOLCHAIN_FILE=/home/kristina/KRisti0w/workspace/projects/lab07/tools/polly/default.cmake`
+  `-B/home/kristina/KRisti0w/workspace/projects/lab08/_builds/default`
+  `-DCMAKE_TOOLCHAIN_FILE=/home/kristina/KRisti0w/workspace/projects/lab08/tools/polly/default.cmake`
 ]
 
-[/home/kristina/KRisti0w/workspace/projects/lab07]> "cmake" "-H." "-B/home/kristina/KRisti0w/workspace/projects/lab07/_builds/default" "-DCMAKE_TOOLCHAIN_FILE=/home/kristina/KRisti0w/workspace/projects/lab07/tools/polly/default.cmake"
+[/home/kristina/KRisti0w/workspace/projects/lab08]> "cmake" "-H." "-B/home/kristina/KRisti0w/workspace/projects/lab08/_builds/default" "-DCMAKE_TOOLCHAIN_FILE=/home/kristina/KRisti0w/workspace/projects/lab08/tools/polly/default.cmake"
 
 -- [polly] Used toolchain: Default
 -- The C compiler identification is GNU 14.2.0
@@ -195,15 +195,15 @@ Execute command: [
 -- Found Threads: TRUE
 -- Configuring done (8.6s)
 -- Generating done (0.0s)
--- Build files have been written to: /home/kristina/KRisti0w/workspace/projects/lab07/_builds/default
+-- Build files have been written to: /home/kristina/KRisti0w/workspace/projects/lab08/_builds/default
 Execute command: [
   `cmake`
   `--build`
-  `/home/kristina/KRisti0w/workspace/projects/lab07/_builds/default`
+  `/home/kristina/KRisti0w/workspace/projects/lab08/_builds/default`
   `--`
 ]
 
-[/home/kristina/KRisti0w/workspace/projects/lab07]> "cmake" "--build" "/home/kristina/KRisti0w/workspace/projects/lab07/_builds/default" "--"
+[/home/kristina/KRisti0w/workspace/projects/lab08]> "cmake" "--build" "/home/kristina/KRisti0w/workspace/projects/lab08/_builds/default" "--"
 
 [  8%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
 [ 16%] Linking CXX static library libprint.a
@@ -228,9 +228,9 @@ Execute command: [
   `ctest`
 ]
 
-[/home/kristina/KRisti0w/workspace/projects/lab07/_builds/default]> "ctest"
+[/home/kristina/KRisti0w/workspace/projects/lab08/_builds/default]> "ctest"
 
-Test project /home/kristina/KRisti0w/workspace/projects/lab07/_builds/default
+Test project /home/kristina/KRisti0w/workspace/projects/lab08/_builds/default
     Start 1: check
 1/1 Test #1: check ............................   Passed    0.01 sec
 
@@ -238,7 +238,7 @@ Test project /home/kristina/KRisti0w/workspace/projects/lab07/_builds/default
 
 Total Test time (real) =   0.02 sec
 -
-Log saved: /home/kristina/KRisti0w/workspace/projects/lab07/_logs/polly/default/log.txt
+Log saved: /home/kristina/KRisti0w/workspace/projects/lab08/_logs/polly/default/log.txt
 -
 Generate: 0:00:09.724884s
 Build: 0:00:20.402409s
@@ -326,3 +326,5 @@ _install/
 
 15 directories, 57 files
 ```
+
+[![Docker Build](https://img.shields.io/badge/docker-build-blue)](https://hub.docker.com/)

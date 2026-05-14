@@ -1,0 +1,28 @@
+name: Docker Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build Docker image
+        run: docker build -t logger .
+      
+      - name: Test Docker image
+        run: |
+          mkdir -p logs
+          echo "test" | docker run -i -v "$(pwd)/logs/:/home/logs/" logger
+          cat logs/log.txt
+      
+      - name: List images
+        run: docker images | grep logger
