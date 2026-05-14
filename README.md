@@ -1,330 +1,178 @@
 [![CI](https://github.com/KRisti0w/lab08/actions/workflows/ci.yml/badge.svg)](https://github.com/KRisti0w/lab08/actions/workflows/ci.yml)
 ## Отчёт к lab08
-В рамках выполнения данной лабораторной работы мною были выполнены команды из tutorial с заменой устаревшего hunter на FetchContent:
-1) Скопирован репозиторий из lab06.
-2) В соответствие с tutorial были установлен hunter и изменён CMakeLists.txt, но в процессе сборки произошла ошибка, связанная с версией компилятора
-```bash
------------------------------- ERROR ------------------------------
-    https://hunter.readthedocs.io/en/latest/reference/errors/error.internal.html
--------------------------------------------------------------------
+В рамках выполнения данной лабораторной работы мною были выполнены команды из tutorial с некоторыми изменениями:
+1) Скопирован репозиторий из lab07.
+2) Написан Dockerfile:
+```dockerfile
+FROM ubuntu:20.04
 
-CMake Error at cmake/HunterGate.cmake:88 (message):
-Call Stack (most recent call first):
-  cmake/HunterGate.cmake:98 (hunter_gate_error_page)
-  cmake/HunterGate.cmake:347 (hunter_gate_internal_error)
-  cmake/HunterGate.cmake:511 (hunter_gate_download)
-  CMakeLists.txt:3 (HunterGate)
+ENV DEBIAN_FRONTEND=noninteractive
 
+RUN apt update && apt install -yy gcc g++ cmake git
 
--- Configuring incomplete, errors occurred!
-```
-Мною было принято решение не мучиться с адаптацией устаревшего hunter, а попробовать подключить более современный FetchContent
+COPY . print/
+WORKDIR print
+> RUN if [ ! -f demo/main.cpp ]; then \
+      mkdir -p demo && \
+      echo '#include <iostream>' > demo/main.cpp && \
+      echo '#include <fstream>' >> demo/main.cpp && \
+      echo 'int main() { std::string s; while(std::cin >> s) std::cout << s << std::endl; return 0; }' >> demo/main.cpp; \
+    fi
+> RUN cmake -H. -B_build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=_install -DBUILD_TESTS=OFF -DBUILD_DEMO=ON -DBUILD_EXAMPLES=ON
+RUN cmake --build _build
+RUN cmake --build _build --target install
+> RUN cd _install/bin && \
+    if [ -f print_demo ]; then ln -s print_demo demo; fi && \
+    if [ -f example1 ]; then ln -s example1 demo; fi && \
+    ls -la
 
-3) Для этого в CMakeLists.txt были внесены следующие изменения:
-```bash
-$ git diff
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 57997ae..1ce0b56 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 11)
- set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ENV LOG_PATH /home/logs/log.txt
 
- option(BUILD_EXAMPLES "Build examples" OFF)
-+option(BUILD_TESTS "Build tests" ON)
+VOLUME /home/logs
 
- project(print)
- set(PRINT_VERSION_MAJOR 0)
-@@ -33,12 +34,19 @@ if(BUILD_EXAMPLES)
-   endforeach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
- endif()
+WORKDIR _install/bin
 
-+include(FetchContent)
-+FetchContent_Declare(
-+    googletest
-+    GIT_REPOSITORY https://github.com/google/googletest.git
-+    GIT_TAG        v1.15.2
-+)
-+FetchContent_MakeAvailable(googletest)
-+
- if(BUILD_TESTS)
-   enable_testing()
--  add_subdirectory(third-party/gtest)
-   file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
-   add_executable(check ${${PROJECT_NAME}_TEST_SOURCES})
--  target_link_libraries(check ${PROJECT_NAME} gtest_main)
-+  target_link_libraries(check ${PROJECT_NAME} GTest::gtest_main)
-   add_test(NAME check COMMAND check)
- endif()
-```
-4) Была произведена ручная сборка и запущен тест
-```bash
-$ cmake -H. -B_builds -DBUILD_TESTS=ON
-kristina@debian:~/KRisti0w/workspace/projects/lab08$ cmake -H. -B_builds -DBUILD_TESTS=ON
--- The C compiler identification is GNU 14.2.0
--- The CXX compiler identification is GNU 14.2.0
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working C compiler: /usr/bin/cc - skipped
--- Detecting C compile features
--- Detecting C compile features - done
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Check for working CXX compiler: /usr/bin/c++ - skipped
--- Detecting CXX compile features
--- Detecting CXX compile features - done
--- Performing Test CMAKE_HAVE_LIBC_PTHREAD
--- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
--- Found Threads: TRUE
--- Configuring done (4.0s)
--- Generating done (0.0s)
--- Build files have been written to: /home/kristina/KRisti0w/workspace/projects/lab08/_builds
-
-$ cmake --build _builds
-[  8%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
-[ 16%] Linking CXX static library libprint.a
-[ 16%] Built target print
-[ 25%] Building CXX object _deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
-[ 33%] Linking CXX static library ../../../lib/libgtest.a
-[ 33%] Built target gtest
-[ 41%] Building CXX object _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-[ 50%] Linking CXX static library ../../../lib/libgtest_main.a
-[ 50%] Built target gtest_main
-[ 58%] Building CXX object CMakeFiles/check.dir/tests/test1.cpp.o
-[ 66%] Linking CXX executable check
-[ 66%] Built target check
-[ 75%] Building CXX object _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
-[ 83%] Linking CXX static library ../../../lib/libgmock.a
-[ 83%] Built target gmock
-[ 91%] Building CXX object _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
-[100%] Linking CXX static library ../../../lib/libgmock_main.a
-[100%] Built target gmock_main
-
-$ cmake --build _builds --target test
-Running tests...
-Test project /home/kristina/KRisti0w/workspace/projects/lab08/_builds
-    Start 1: check
-1/1 Test #1: check ............................   Passed    0.01 sec
-
-100% tests passed, 0 tests failed out of 1
-
-Total Test time (real) =   0.01 sec
-```
-FetchContent успешно скачал и собрал GTest
-```bash
-$ ls -la _builds/_deps/
-итого 20
-drwxrwxr-x 5 kristina kristina 4096 мая 13 13:18 .
-drwxrwxr-x 7 kristina kristina 4096 мая 13 13:19 ..
-drwxrwxr-x 5 kristina kristina 4096 мая 13 13:19 googletest-build
-drwxrwxr-x 8 kristina kristina 4096 мая 13 13:18 googletest-src
-drwxrwxr-x 4 kristina kristina 4096 мая 13 13:18 googletest-subbuild
-```
-5) Написан demo и добавлен в CMakeLists.txt
-```cpp
-#include <print.hpp>
-
-#include <cstdlib>
-
-int main(int argc, char* argv[])
-{
-  const char* log_path = std::getenv("LOG_PATH");
-  if (log_path == nullptr)
-  {
-    std::cerr << "undefined environment variable: LOG_PATH" << std::endl;
-    return 1;
-  }
-  std::string text;
-  while (std::cin >> text)
-  {
-    std::ofstream out{log_path, std::ios_base::app};
-    print(text, out);
-    out << std::endl;
-  }
-}
+ENTRYPOINT ["./demo"]
 ```
 
-6) Подключён модуль polly и установлен clang
 
-7) Через polly был запущен тест
+3) Произведена сборка Docker-образа
 ```bash
-Python version: 3.13
-Build dir: /home/kristina/KRisti0w/workspace/projects/lab08/_builds/default
-Execute command: [
-  `which`
-  `cmake`
+ sudo docker build --no-cache -t logger .
+[+] Building 51.3s (15/15) FINISHED                                                                      docker:default
+ => [internal] load build definition from Dockerfile                                                               0.0s
+ => => transferring dockerfile: 933B                                                                               0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:20.04                                                    1.5s
+ => [internal] load .dockerignore                                                                                  0.0s
+ => => transferring context: 2B                                                                                    0.0s
+ => [ 1/10] FROM docker.io/library/ubuntu:20.04@sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15  0.0s
+ => [internal] load build context                                                                                  0.1s
+ => => transferring context: 120.94kB                                                                              0.1s
+ => CACHED [ 2/10] RUN apt update && apt install -yy gcc g++ cmake git                                             0.0s
+ => [ 3/10] COPY . print/                                                                                          0.4s
+ => [ 4/10] WORKDIR print                                                                                          0.2s
+ => [ 5/10] RUN if [ ! -f demo/main.cpp ]; then       mkdir -p demo &&       echo '#include <iostream>' > demo/ma  0.8s
+ => [ 6/10] RUN cmake -H. -B_build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=_install -DBUILD_TESTS=OFF   12.8s
+ => [ 7/10] RUN cmake --build _build                                                                              31.5s
+ => [ 8/10] RUN cmake --build _build --target install                                                              1.7s
+ => [ 9/10] RUN cd _install/bin &&     if [ -f print_demo ]; then ln -s print_demo demo; fi &&     if [ -f exampl  0.9s
+ => [10/10] WORKDIR _install/bin                                                                                   0.2s
+ => exporting to image                                                                                             0.7s
+ => => exporting layers                                                                                            0.6s
+ => => writing image sha256:9b09c8610504a0072bba87094cd12f66c7ce3af7ecb10abe3824ddc587b79af0                       0.0s
+ => => naming to docker.io/library/logger
+```
+Результат сборки:
+```bash
+$ sudo docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+logger       latest    9b09c8610504   12 minutes ago   530MB
+<none>       <none>    947b462dda87   22 minutes ago   530MB
+```
+4) Запущен контейнер
+```bash
+$ docker run -it -v "$(pwd)/logs/:/home/logs/" logger
+text1
+text2
+text3
+```
+Результат:
+```bash
+$ sudo docker inspect logger
+[
+    {
+        "Id": "sha256:947b462dda8708679814851e7b97f53207c9e838492d59656b5742992e0e1805",
+        "RepoTags": [
+            "logger:latest"
+        ],
+        "RepoDigests": [],
+        "Parent": "",
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-05-14T09:24:07.905004513+03:00",
+        "DockerVersion": "",
+        "Author": "",
+        "Config": {
+            "Hostname": "",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "DEBIAN_FRONTEND=noninteractive",
+                "LOG_PATH=/home/logs/log.txt"
+            ],
+            "Cmd": [
+                "./demo",
+                "./print_demo",
+                "./example1",
+                "./example2"
+            ],
+            "ArgsEscaped": true,
+            "Image": "",
+            "Volumes": {
+                "/home/logs": {}
+            },
+            "WorkingDir": "/print/_install/bin",
+            "Entrypoint": null,
+            "OnBuild": null,
+            "Labels": {
+                "org.opencontainers.image.ref.name": "ubuntu",
+                "org.opencontainers.image.version": "20.04"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 529801379,
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/az92orgs278rt0mu1va5nddya/diff:/var/lib/docker/overlay2/j0ta90mgb460dliim2vnm1f4y/diff:/var/lib/docker/overlay2/lflghbbon6krd1p2q4iy53nj7/diff:/var/lib/docker/overlay2/wjylvy4mq2mr07iidhdq1udu4/diff:/var/lib/docker/overlay2/sfd60g0mf73mz7wbkqmbnynao/diff:/var/lib/docker/overlay2/eex0ey7ok7f85zg0mkgaofy58/diff:/var/lib/docker/overlay2/lzsf99ej2ye3n0zoro2h2kxz2/diff:/var/lib/docker/overlay2/80f46ad31334c679742f6acb2a4dd8d8f08936900b2906a208cc51294b01bd9b/diff",
+                "MergedDir": "/var/lib/docker/overlay2/qnd78ckvv2vylpcf7ycoimeu5/merged",
+                "UpperDir": "/var/lib/docker/overlay2/qnd78ckvv2vylpcf7ycoimeu5/diff",
+                "WorkDir": "/var/lib/docker/overlay2/qnd78ckvv2vylpcf7ycoimeu5/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:470b66ea5123c93b0d5606e4213bf9e47d3d426b640d32472e4ac213186c4bb6",
+                "sha256:4fe49cc1e7cc74508e3cba02f5498eb0254af0a5fd71cd4fde5dfb276929598c",
+                "sha256:272d035a48d560af53a2f2dcb95cda07804bc60dd8db7419bd5e755394e6b19c",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:ea223464a3aad4c1111e74b213c3455f329ee88f7a5c5de7af0958b58c976948",
+                "sha256:c25e1e1244224f7d3dc856261068d18de8b0fd55fc3d2dafabcf41e38a5aad32",
+                "sha256:622a620a89ef320287d482026ce553503fa8570a0ba1a672f8f0c86fd2e5327a",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-05-14T09:24:08.078446802+03:00"
+        }
+    }
 ]
-
-[/home/kristina/KRisti0w/workspace/projects/lab08]> "which" "cmake"
-
-/usr/bin/cmake
-Execute command: [
-  `cmake`
-  `--version`
-]
-
-[/home/kristina/KRisti0w/workspace/projects/lab08]> "cmake" "--version"
-
-cmake version 3.31.6
-
-CMake suite maintained and supported by Kitware (kitware.com/cmake).
-Execute command: [
-  `cmake`
-  `-H.`
-  `-B/home/kristina/KRisti0w/workspace/projects/lab08/_builds/default`
-  `-DCMAKE_TOOLCHAIN_FILE=/home/kristina/KRisti0w/workspace/projects/lab08/tools/polly/default.cmake`
-]
-
-[/home/kristina/KRisti0w/workspace/projects/lab08]> "cmake" "-H." "-B/home/kristina/KRisti0w/workspace/projects/lab08/_builds/default" "-DCMAKE_TOOLCHAIN_FILE=/home/kristina/KRisti0w/workspace/projects/lab08/tools/polly/default.cmake"
-
--- [polly] Used toolchain: Default
--- The C compiler identification is GNU 14.2.0
--- The CXX compiler identification is GNU 14.2.0
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working C compiler: /usr/bin/cc - skipped
--- Detecting C compile features
--- Detecting C compile features - done
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Check for working CXX compiler: /usr/bin/c++ - skipped
--- Detecting CXX compile features
--- Detecting CXX compile features - done
--- Performing Test CMAKE_HAVE_LIBC_PTHREAD
--- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
--- Found Threads: TRUE
--- Configuring done (8.6s)
--- Generating done (0.0s)
--- Build files have been written to: /home/kristina/KRisti0w/workspace/projects/lab08/_builds/default
-Execute command: [
-  `cmake`
-  `--build`
-  `/home/kristina/KRisti0w/workspace/projects/lab08/_builds/default`
-  `--`
-]
-
-[/home/kristina/KRisti0w/workspace/projects/lab08]> "cmake" "--build" "/home/kristina/KRisti0w/workspace/projects/lab08/_builds/default" "--"
-
-[  8%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
-[ 16%] Linking CXX static library libprint.a
-[ 16%] Built target print
-[ 25%] Building CXX object _deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
-[ 33%] Linking CXX static library ../../../lib/libgtest.a
-[ 33%] Built target gtest
-[ 41%] Building CXX object _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-[ 50%] Linking CXX static library ../../../lib/libgtest_main.a
-[ 50%] Built target gtest_main
-[ 58%] Building CXX object CMakeFiles/check.dir/tests/test1.cpp.o
-[ 66%] Linking CXX executable check
-[ 66%] Built target check
-[ 75%] Building CXX object _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
-[ 83%] Linking CXX static library ../../../lib/libgmock.a
-[ 83%] Built target gmock
-[ 91%] Building CXX object _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
-[100%] Linking CXX static library ../../../lib/libgmock_main.a
-[100%] Built target gmock_main
-Run tests
-Execute command: [
-  `ctest`
-]
-
-[/home/kristina/KRisti0w/workspace/projects/lab08/_builds/default]> "ctest"
-
-Test project /home/kristina/KRisti0w/workspace/projects/lab08/_builds/default
-    Start 1: check
-1/1 Test #1: check ............................   Passed    0.01 sec
-
-100% tests passed, 0 tests failed out of 1
-
-Total Test time (real) =   0.02 sec
--
-Log saved: /home/kristina/KRisti0w/workspace/projects/lab08/_logs/polly/default/log.txt
--
-Generate: 0:00:09.724884s
-Build: 0:00:20.402409s
-Test: 0:00:00.063267s
--
-Total: 0:00:30.192767s
--
-SUCCESS
 ```
-8) Произведена сборка и установка в _install
 ```bash
-$ tree _install/
-_install/
-└── default
-    ├── bin
-    │   └── demo
-    ├── cmake
-    │   ├── print-config.cmake
-    │   └── print-config-noconfig.cmake
-    ├── include
-    │   ├── gmock
-    │   │   ├── gmock-actions.h
-    │   │   ├── gmock-cardinalities.h
-    │   │   ├── gmock-function-mocker.h
-    │   │   ├── gmock.h
-    │   │   ├── gmock-matchers.h
-    │   │   ├── gmock-more-actions.h
-    │   │   ├── gmock-more-matchers.h
-    │   │   ├── gmock-nice-strict.h
-    │   │   ├── gmock-spec-builders.h
-    │   │   └── internal
-    │   │       ├── custom
-    │   │       │   ├── gmock-generated-actions.h
-    │   │       │   ├── gmock-matchers.h
-    │   │       │   ├── gmock-port.h
-    │   │       │   └── README.md
-    │   │       ├── gmock-internal-utils.h
-    │   │       ├── gmock-port.h
-    │   │       └── gmock-pp.h
-    │   ├── gtest
-    │   │   ├── gtest-assertion-result.h
-    │   │   ├── gtest-death-test.h
-    │   │   ├── gtest.h
-    │   │   ├── gtest-matchers.h
-    │   │   ├── gtest-message.h
-    │   │   ├── gtest-param-test.h
-    │   │   ├── gtest_pred_impl.h
-    │   │   ├── gtest-printers.h
-    │   │   ├── gtest_prod.h
-    │   │   ├── gtest-spi.h
-    │   │   ├── gtest-test-part.h
-    │   │   ├── gtest-typed-test.h
-    │   │   └── internal
-    │   │       ├── custom
-    │   │       │   ├── gtest.h
-    │   │       │   ├── gtest-port.h
-    │   │       │   ├── gtest-printers.h
-    │   │       │   └── README.md
-    │   │       ├── gtest-death-test-internal.h
-    │   │       ├── gtest-filepath.h
-    │   │       ├── gtest-internal.h
-    │   │       ├── gtest-param-util.h
-    │   │       ├── gtest-port-arch.h
-    │   │       ├── gtest-port.h
-    │   │       ├── gtest-string.h
-    │   │       └── gtest-type-util.h
-    │   └── print.hpp
-    └── lib
-        ├── cmake
-        │   └── GTest
-        │       ├── GTestConfig.cmake
-        │       ├── GTestConfigVersion.cmake
-        │       ├── GTestTargets.cmake
-        │       └── GTestTargets-noconfig.cmake
-        ├── libgmock.a
-        ├── libgmock_main.a
-        ├── libgtest.a
-        ├── libgtest_main.a
-        ├── libprint.a
-        └── pkgconfig
-            ├── gmock_main.pc
-            ├── gmock.pc
-            ├── gtest_main.pc
-            └── gtest.pc
+$ cat logs/log.txt
+text1
+text2
+text3
+```
+5) В ci.yml добавлена часть кода про docker
+```cmake
+...
 
-15 directories, 57 files
+ docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t logger .
 ```
 
-[![Docker Build](https://img.shields.io/badge/docker-build-blue)](https://hub.docker.com/)
+6) Изменения в ci.yml и Dockerfile запушены в репозиторий
